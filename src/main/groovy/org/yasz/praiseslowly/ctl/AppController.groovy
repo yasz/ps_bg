@@ -25,9 +25,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping("/api/")
 public class AppController {
-     @RequestMapping(value = "/unit2", method = GET)
+     @RequestMapping(value = "/unit2", method = [GET,POST])
      ResponseEntity<byte[]> index(@RequestParam(value="title", defaultValue="title1")String title,
-                                  @RequestParam(value="lyric", defaultValue="lyric1")String lyric) {
+                                  @RequestParam(value="lyric", defaultValue="lyric1")String lyric,
+                                  @RequestParam(value="template", defaultValue="korea2.pptx")String template) {
          /**
           * created by yang on 16:22 2018/1/16.
           * describtion:基于unit2模板，在URL填充title lyric
@@ -37,8 +38,8 @@ public class AppController {
           */
 
          System.out.println("ok /api/unit2 GET\n\n");
-         PPTXHelper ppt = new PPTXHelper();
-
+         PPTXHelper ppt = new PPTXHelper(template);
+         lyric=lyric.replaceAll(/\r\n/,'\n')
          ppt.parseUnits2(title.split("zzz").toList(),lyric.split("zzz").toList());
          OutputStream os = new ByteArrayOutputStream()
          ppt.presentationMLPackage.save(os)
@@ -50,18 +51,18 @@ public class AppController {
          return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/unit2", method = POST)
-    ResponseEntity<byte[]> index2(@RequestParam(value="title", defaultValue="title1")String title,
-                                  @RequestParam(value="lyric", defaultValue="lyric1")String lyric) {
-        /**
-         * created by yang on 16:22 2018/1/16.
-         * describtion:基于unit2模板，在post body填充title lyric
-         * @param title:
-         * @param lyric:
-         @param tmp:默认
-         */
-        System.out.println("*****post");
-        return index(title,lyric.replaceAll(/\r\n/,'\n'));
-    }
+//    @RequestMapping(value = "/unit2", method = POST)
+//    ResponseEntity<byte[]> index2(@RequestParam(value="title", defaultValue="title1")String title,
+//                                  @RequestParam(value="lyric", defaultValue="lyric1")String lyric) {
+//        /**
+//         * created by yang on 16:22 2018/1/16.
+//         * describtion:基于unit2模板，在post body填充title lyric
+//         * @param title:
+//         * @param lyric:
+//         @param tmp:默认
+//         */
+//
+//        return index(title,);
+//    }
 
 }

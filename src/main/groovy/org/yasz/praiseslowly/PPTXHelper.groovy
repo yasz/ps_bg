@@ -15,35 +15,44 @@ import org.pptx4j.pml.Sld
 
 class PPTXHelper {
     PresentationMLPackage presentationMLPackage
-    MainPresentationPart pp
+    MainPresentationPart mpp
     SlideLayoutPart layoutPart
-    String defaultTmpPath = "C:\\ps\\child2.pptx"
+    String defaulTmpDir = "src/template/"
+    String defaultTmplate = "child2.pptx"
     PPTXHelper(){
         /**
          * created by yang on 11:22 2018/1/16.
          * describtion:
-         * @param :默认基于child2.pptx
+         * @param :默认基于defaultTmpPath .pptx
 
          */
-        init(defaultTmpPath)
+        init(defaultTmplate)
     }
-    PPTXHelper(String filePath) {
+    PPTXHelper(String tmplate) {
         /**
          * created by yang on 11:21 2018/1/16.
          * describtion:
-         * @param filePath:基于何种模板路径
+         * @param tmplate:构造函数初始化模板路径
 
          */
-        init(filePath)
+        init(tmplate)
 
     }
 
-    void init(String filePath){
+    void init(String tmplate){
+        /**
+         * created by yang on 21:22 2018/3/10.
+         * describtion:
+         * @param tmplate:
+
+         */
+        def filePath = defaulTmpDir + tmplate
         if (filePath.endsWith(".ppt")) {
             throw new Exception("不支持此格式，请转换为pptx格式");
         } else if (filePath.endsWith(".pptx")) {
             presentationMLPackage=(PresentationMLPackage) OpcPackage.load(new java.io.File(filePath))
-            pp = (MainPresentationPart)presentationMLPackage.getParts().getParts().get(new PartName("/ppt/presentation.xml"))
+            mpp = (MainPresentationPart)presentationMLPackage.getParts().getParts().get(new PartName
+                    ("/ppt/presentation.xml"))
             layoutPart = (SlideLayoutPart)presentationMLPackage.getParts().getParts().get(new PartName("/ppt/slideLayouts/slideLayout1.xml"));//基于哪个master页
         }
     }
@@ -55,8 +64,8 @@ class PPTXHelper {
          */
 
         SlidePart newSlide = new SlidePart();//new PartName("/ppt/slides/slide1.xml")
-        pp.addSlide(newSlide)
-        SlidePart copySlide = pp.getSlide(num);
+        mpp.addSlide(newSlide)
+        SlidePart copySlide = mpp.getSlide(num);
 
         newSlide.addTargetPart(copySlide.getSlideLayoutPart())//模板
         String content = copySlide.getXML()
@@ -71,11 +80,11 @@ class PPTXHelper {
          * @param num:remove slide start with 0, default is the final page 页码，默认删除最后一页
 
          */
-        pp.removeSlide(num)
+        mpp.removeSlide(num)
     }
 
     void removeSlide(){
-        removeSlide(pp.getSlideCount()-1)
+        removeSlide(mpp.getSlideCount()-1)
     }
 
     void writeTmplate(String title, String lyric, String order, int num) {
@@ -86,26 +95,26 @@ class PPTXHelper {
          * @param lyrics :one page
          * @param num :rewrite slide start with 0, default is the final page
          */
-        num = num ? num : pp.getSlideCount()-1
-        SlidePart slide = pp.getSlide(num)
+        num = num ? num : mpp.getSlideCount()-1
+        SlidePart slide = mpp.getSlide(num)
         String content = slide.getXML()
         content = content.replaceAll(/#title/, title).replaceAll(/#lyric/, lyric).replaceAll (/#order/, order)
         slide.setJaxbElement((Sld)XmlUtils.unmarshalString(content,Context.jcPML))
     }
 
     void writeTmplate(String title, String lyric, String order){
-        writeTmplate(title,lyric,order,pp.getSlideCount()-1)
+        writeTmplate(title,lyric,order,mpp.getSlideCount()-1)
     }
-    boolean readSlideText() {
+    String readSlideText() {
         /**
          * created by yang on 17:37 2017/12/28.
          * describtion:读取一份文档，并将每个模块的文本读取出来
          * @param slideShow :
          */
-        return true
+        return ""
     }
 
-    String checkTmplate() {
+    boolean checkTmplate() {
         /**
          * created by yang on 17:21 2017/12/28.
          * describtion:检查用户上传PPT模板是否合规,合规的规则是
@@ -183,31 +192,12 @@ class PPTXHelper {
         def ppt = new PPTXHelper()
         ppt.parseUnits2(["街は光の中に","街は光の中に2"], ["""今日のこの時をいつか思い出す
 希望と大きな夢を抱いて歩いた日を
+
 今日は旅立ちの朝が来たけれど
 いつまでも覚えていようこの日のこと
-
-涙流す日が誰もあるけれど
-空はいつもこの街を暖かく見ている
-今がつらくても夜はまた明ける
-微笑を忘れないで歩いていこう
-今日のこの街はどこか輝いて
-
-空に光る雲いっぱい天使のプレゼント
-いつかこの街に来る日もあるけど
-今だけは別れをいおう
-「グッバイアワデイズグッバイ」
-
-いつかこの街に来る日もあるけど
-今だけは別れをいおう
-「グッバイアワデイズグッバイ」
-微笑み忘れないで
-歩いていこう
-""","""hahaha
-hahaha
-
-hahaha
 """])
-        ppt.export("c:\\1.pptx")
+
+        ppt.export("1.pptx")
 
     }
 
