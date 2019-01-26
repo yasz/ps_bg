@@ -17,7 +17,7 @@ class PPTXHelper {
     PresentationMLPackage presentationMLPackage
     MainPresentationPart pp
     SlideLayoutPart layoutPart
-    String defaultTmpPath = "C:\\ps\\child2.pptx"
+    String defaultTmpPath = "${System.getProperty("user.dir")}/dat/template/child2.pptx"
     PPTXHelper(){
         /**
          * created by yang on 11:22 2018/1/16.
