@@ -1,4 +1,5 @@
 package org.yasz.praiseslowly
+
 import org.docx4j.XmlUtils
 import org.docx4j.openpackaging.packages.OpcPackage
 import org.docx4j.openpackaging.packages.PresentationMLPackage
@@ -17,41 +18,46 @@ class PPTXHelper {
     PresentationMLPackage presentationMLPackage
     MainPresentationPart pp
     SlideLayoutPart layoutPart
-    String defaultTmpPath = "${System.getProperty("user.dir")}/dat/template/child2.pptx"
-    PPTXHelper(){
+    String defaultDir = "${System.getProperty("user.dir")}/dat/template"
+
+    PPTXHelper() {
         /**
          * created by yang on 11:22 2018/1/16.
          * describtion:
          * @param :默认基于child2.pptx
 
          */
-        init(defaultTmpPath)
+        init("${defaultDir}/child2.pptx")
+
     }
+
     PPTXHelper(String filePath) {
         /**
          * created by yang on 11:21 2018/1/16.
          * describtion:
-         * @param filePath:基于何种模板路径
+         * @param filePath :基于何种模板路径
 
          */
-        init(filePath)
+        init("${defaultDir}/${filePath}")
 
     }
 
-    void init(String filePath){
+    void init(String filePath) {
         if (filePath.endsWith(".ppt")) {
             throw new Exception("不支持此格式，请转换为pptx格式");
         } else if (filePath.endsWith(".pptx")) {
-            presentationMLPackage=(PresentationMLPackage) OpcPackage.load(new java.io.File(filePath))
-            pp = (MainPresentationPart)presentationMLPackage.getParts().getParts().get(new PartName("/ppt/presentation.xml"))
-            layoutPart = (SlideLayoutPart)presentationMLPackage.getParts().getParts().get(new PartName("/ppt/slideLayouts/slideLayout1.xml"));//基于哪个master页
+            presentationMLPackage = (PresentationMLPackage) OpcPackage.load(new java.io.File(filePath))
+            pp = (MainPresentationPart) presentationMLPackage.getParts().getParts().get(new PartName("/ppt/presentation.xml"))
+            layoutPart = (SlideLayoutPart) presentationMLPackage.getParts().getParts().get(new PartName("/ppt/slideLayouts/slideLayout1.xml"));
+//基于哪个master页
         }
     }
+
     void copySlide(int num) {
         /**
          * created by yang on 17:06 2017/12/29.
          * describtion:拷贝一页SLIDE默认到最后一页
-         * @param num:拷贝SLIDE页码，从0开始
+         * @param num :拷贝SLIDE页码，从0开始
          */
 
         SlidePart newSlide = new SlidePart();//new PartName("/ppt/slides/slide1.xml")
@@ -61,21 +67,22 @@ class PPTXHelper {
         newSlide.addTargetPart(copySlide.getSlideLayoutPart())//模板
         String content = copySlide.getXML()
         newSlide.addTargetPart(copySlide.getSlideLayoutPart());
-        newSlide.setJaxbElement((Sld)XmlUtils.unmarshalString(content,copySlide.getJAXBContext()))
+        newSlide.setJaxbElement((Sld) XmlUtils.unmarshalString(content, copySlide.getJAXBContext()))
 
     }
-    void removeSlide(int num){
+
+    void removeSlide(int num) {
         /**
          * created by yang on 11:04 2017/12/30.
          * describtion:删除一页PPT
-         * @param num:remove slide start with 0, default is the final page 页码，默认删除最后一页
+         * @param num :remove slide start with 0, default is the final page 页码，默认删除最后一页
 
          */
         pp.removeSlide(num)
     }
 
-    void removeSlide(){
-        removeSlide(pp.getSlideCount()-1)
+    void removeSlide() {
+        removeSlide(pp.getSlideCount() - 1)
     }
 
     void writeTmplate(String title, String lyric, String order, int num) {
@@ -86,16 +93,17 @@ class PPTXHelper {
          * @param lyrics :one page
          * @param num :rewrite slide start with 0, default is the final page
          */
-        num = num ? num : pp.getSlideCount()-1
+        num = num ? num : pp.getSlideCount() - 1
         SlidePart slide = pp.getSlide(num)
         String content = slide.getXML()
-        content = content.replaceAll(/#title/, title).replaceAll(/#lyric/, lyric).replaceAll (/#order/, order)
-        slide.setJaxbElement((Sld)XmlUtils.unmarshalString(content,Context.jcPML))
+        content = content.replaceAll(/#title/, title).replaceAll(/#lyric/, lyric).replaceAll(/#order/, order)
+        slide.setJaxbElement((Sld) XmlUtils.unmarshalString(content, Context.jcPML))
     }
 
-    void writeTmplate(String title, String lyric, String order){
-        writeTmplate(title,lyric,order,pp.getSlideCount()-1)
+    void writeTmplate(String title, String lyric, String order) {
+        writeTmplate(title, lyric, order, pp.getSlideCount() - 1)
     }
+
     boolean readSlideText() {
         /**
          * created by yang on 17:37 2017/12/28.
@@ -113,6 +121,7 @@ class PPTXHelper {
          */
         return true
     }
+
     void export(String path) {
         /**
          * created by yang on 21:59 2017/12/28.
@@ -123,65 +132,67 @@ class PPTXHelper {
 
     }
 
-    void parseUnit1(String title,String lyrics){
+    void parseUnit1(String title, String lyrics) {
         /**
          * created by yang on 17:28 2017/12/29.
          * describtion: 基于 single slide ppt 导出一首
-         * @param title:
-         * @param lyrics: lyric
+         * @param title :
+         * @param lyrics : lyric
          */
         def lyricList = lyrics.split(/\n\n/)
         def max = lyricList.size()
-        lyricList.eachWithIndex{ String lyric, int i ->
+        lyricList.eachWithIndex { String lyric, int i ->
             copySlide(0)
-            writeTmplate(title,lyric,"${i+1}/${max}")
+            writeTmplate(title, lyric, "${i + 1}/${max}")
         }
     }
 
-    void parseUnits1(List<String> titles,List<String> lyrics){
+    void parseUnits1(List<String> titles, List<String> lyrics) {
         /**
          * created by yang on 22:03 2017/12/31.
          * describtion:基于 single slide ppt 导出多首
-         * @param titles:
-         * @param lyrics:
+         * @param titles :
+         * @param lyrics :
 
          */
-        titles.eachWithIndex{ String title, int i -> parseUnit1(title,lyrics.get(i))}
+        titles.eachWithIndex { String title, int i -> parseUnit1(title, lyrics.get(i)) }
         removeSlide(0)
     }
-    void parseUnit2(String title,String lyrics){
+
+    void parseUnit2(String title, String lyrics) {
         /**
          * created by yang on 17:28 2017/12/29.
          * describtion: 基于 二页的模板处理1个单元
-         * @param title:
-         * @param lyrics:whoe lyric
+         * @param title :
+         * @param lyrics :whoe lyric
          */
 
         copySlide(0)
-        writeTmplate(title,"","")
+        writeTmplate(title, "", "")
         def lyricList = lyrics.split(/\n\n/)
         def max = lyricList.size()
-        lyricList.eachWithIndex{ String lyric, int i ->
+        lyricList.eachWithIndex { String lyric, int i ->
             copySlide(1)
-            writeTmplate(title,lyric,"${i+1}/${max}")
+            writeTmplate(title, lyric, "${i + 1}/${max}")
         }
     }
 
-    void parseUnits2(List<String> titles,List<String> lyrics){
+    void parseUnits2(List<String> titles, List<String> lyrics) {
         /**
          * created by yang on 22:03 2017/12/31.
          * describtion:基于 二页的模板处理多个个单元
-         * @param titles:
-         * @param lyrics:
+         * @param titles :
+         * @param lyrics :
 
          */
-        titles.eachWithIndex{ String title, int i -> parseUnit2(title,lyrics.get(i))}
+        titles.eachWithIndex { String title, int i -> parseUnit2(title, lyrics.get(i)) }
         removeSlide(0)
         removeSlide(0)
     }
+
     static void main(String[] args) {
         def ppt = new PPTXHelper()
-        ppt.parseUnits2(["街は光の中に","街は光の中に2"], ["""今日のこの時をいつか思い出す
+        ppt.parseUnits2(["街は光の中に", "街は光の中に2"], ["""今日のこの時をいつか思い出す
 希望と大きな夢を抱いて歩いた日を
 今日は旅立ちの朝が来たけれど
 いつまでも覚えていようこの日のこと
@@ -202,12 +213,12 @@ class PPTXHelper {
 「グッバイアワデイズグッバイ」
 微笑み忘れないで
 歩いていこう
-""","""hahaha
+""", """hahaha
 hahaha
 
 hahaha
 """])
-        ppt.export("c:\\1.pptx")
+        ppt.export("1.pptx")
 
     }
 
