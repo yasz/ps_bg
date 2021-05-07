@@ -1,0 +1,4 @@
+
+rootProject.name = 'ps_bg'
+includeBuild("../helper")
+

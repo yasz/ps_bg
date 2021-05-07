@@ -1,0 +1,16 @@
+common:
+  para: common1
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://ruianva.cn:5432/postgres
+    username: postgres
+    password: ruianVA123
+    poolName: myPool
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+      additional-paths: src/main #重启目录
+      exclude: WEB-INF/**
+  profiles:
+    active: dev
