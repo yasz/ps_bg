@@ -36,7 +36,8 @@ class AppController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @RequestMapping(value = "/unit1", method = [GET,POST])
-    ResponseEntity<byte[]> index(@RequestParam(value="vano", defaultValue="100101")String vano){
+    ResponseEntity<byte[]> index(@RequestParam(value="vano", defaultValue="100101")String vano,@RequestParam
+            (value="sem", defaultValue="211")String sem){
 //        def a =jdbcTemplate.queryForList('select version()')
 
 //        println(a)
@@ -47,7 +48,7 @@ class AppController {
 
         OutputStream os = new ByteArrayOutputStream()
         def conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource())
-        new ReportViewService().getByVano([vano],os,conn)
+        new ReportViewService().getByVano([vano],sem,os,conn)
         conn.close()
         HttpHeaders headers = new HttpHeaders()
         headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${vano}.pdf\"")

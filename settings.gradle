@@ -1,3 +1,10 @@
+pluginManagement {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+}
 
 rootProject.name = 'ps_bg'
 includeBuild("../helper")
