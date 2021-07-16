@@ -58,7 +58,9 @@ class AppController {
      @RequestMapping(value = "/unit2", method = [GET,POST])
      ResponseEntity<byte[]> index(@RequestParam(value="title", defaultValue="title1")String title,
                                   @RequestParam(value="lyric", defaultValue="lyric1")String lyric,
-                                  @RequestParam(value="template", defaultValue="korea2.pptx")String template) {
+                                  @RequestParam(value="template", defaultValue="korea2.pptx")String template,
+                                  @RequestParam(value="filetype", defaultValue="pptx")String filetype
+     ) {
          /**
           * created by yang on 16:22 2018/1/16.
           * describtion:基于unit2模板，在URL填充title lyric
@@ -74,11 +76,15 @@ class AppController {
          ppt.parseUnits2(title.split("zzz").toList(),lyric.split("zzz").toList());
          OutputStream os = new ByteArrayOutputStream()
 //         ppt.presentationMLPackage.save(os)
+         if(filetype == 'pdf'){
          ppt.saveAsPDFOutputStream(os)
+         }else{
+             ppt.export(os)
+         }
          HttpHeaders headers = new HttpHeaders()
          SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd")
          String filename=dateFormat.format(Calendar.getInstance().getTime())
-         headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${filename}.pdf\"")
+         headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${filename}.${filetype}\"")
          headers.setContentType(new MediaType("application","octet-stream"))
          return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
