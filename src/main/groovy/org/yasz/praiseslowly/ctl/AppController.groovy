@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.POST
+
 /**
  * created by yang on 10:54 2018/1/16.
  * describtion:entry rest controller.
@@ -30,14 +31,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST
 @RequestMapping("/api/")
 class AppController {
 
-    public @Value('${para}')String para;
-    public @Value('${common.para}')String para1;
+    public @Value('${para}')
+    String para;
+    public @Value('${common.para}')
+    String para1;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @RequestMapping(value = "/unit1", method = [GET,POST])
-    ResponseEntity<byte[]> index(@RequestParam(value="vano", defaultValue="100101")String vano,@RequestParam
-            (value="sem", defaultValue="211")String sem){
+
+    @RequestMapping(value = "/unit1", method = [GET, POST])
+    ResponseEntity<byte[]> index(@RequestParam(value = "vano", defaultValue = "100101") String vano, @RequestParam
+            (value = "sem", defaultValue = "211") String sem) {
 //        def a =jdbcTemplate.queryForList('select version()')
 
 //        println(a)
@@ -48,60 +52,61 @@ class AppController {
 
         OutputStream os = new ByteArrayOutputStream()
         def conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource())
-        new ReportViewService().getByVano([vano],sem,os,conn)
+        new ReportViewService().getByVano([vano], sem, os, conn)
         conn.close()
         HttpHeaders headers = new HttpHeaders()
-        headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${vano}.pdf\"")
-        headers.setContentType(new MediaType("application","octet-stream"))
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${vano}.pdf\"")
+        headers.setContentType(new MediaType("application", "octet-stream"))
         return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
-     @RequestMapping(value = "/unit2", method = [GET,POST])
-     ResponseEntity<byte[]> index(@RequestParam(value="title", defaultValue="title1")String title,
-                                  @RequestParam(value="lyric", defaultValue="lyric1")String lyric,
-                                  @RequestParam(value="template", defaultValue="korea2.pptx")String template,
-                                  @RequestParam(value="filetype", defaultValue="pptx")String filetype
-     ) {
-         /**
-          * created by yang on 16:22 2018/1/16.
-          * describtion:基于unit2模板，在URL填充title lyric
-          * @param title:
-          * @param lyric:
-            @param tmp:默认
-          */
 
-         System.out.println("ok /api/unit2 GET\n\n");
+    @RequestMapping(value = "/unit2", method = [GET, POST])
+    ResponseEntity<byte[]> index(@RequestParam(value = "title", defaultValue = "title1") String title,
+                                 @RequestParam(value = "lyric", defaultValue = "lyric1") String lyric,
+                                 @RequestParam(value = "template", defaultValue = "korea2.pptx") String template,
+                                 @RequestParam(value = "filetype", defaultValue = "pptx") String filetype
+    ) {
+        /**
+         * created by yang on 16:22 2018/1/16.
+         * describtion:基于unit2模板，在URL填充title lyric
+         * @param title :
+         * @param lyric :
+         @param tmp :默认
+         */
+
+        System.out.println("ok /api/unit2 GET\n\n");
 
 //         lyric=lyric.replaceAll(/\r\n/,'\n')
-         PPTXHelper ppt = new PPTXHelper("dat/template/${template}")
-         ppt.parseUnits2(title.split("zzz").toList(),lyric.split("zzz").toList());
-         OutputStream os = new ByteArrayOutputStream()
+        PPTXHelper ppt = new PPTXHelper("dat/template/${template}")
+        ppt.parseUnits2(title.split("zzz").toList(), lyric.split("zzz").toList());
+        OutputStream os = new ByteArrayOutputStream()
 //         ppt.presentationMLPackage.save(os)
-         if(filetype == 'pdf'){
-         ppt.saveAsPDFOutputStream(os)
-         }else{
-             ppt.export(os)
-         }
-         HttpHeaders headers = new HttpHeaders()
-         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd")
-         String filename=dateFormat.format(Calendar.getInstance().getTime())
-         headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${filename}.${filetype}\"")
-         headers.setContentType(new MediaType("application","octet-stream"))
-         return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
+        if (filetype == 'pdf') {
+            ppt.saveAsPDFOutputStream(os)
+        } else {
+            ppt.saveAsPPTXOutputStream(os)
+        }
+        HttpHeaders headers = new HttpHeaders()
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd")
+        String filename = dateFormat.format(Calendar.getInstance().getTime())
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${filename}.${filetype}\"")
+        headers.setContentType(new MediaType("application", "octet-stream"))
+        return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
-    @RequestMapping(value = "/unit3", method = [GET,POST])
-    ResponseEntity<byte[]>  index3(@RequestParam(value="title", defaultValue="test")String title,
-                @RequestParam(value="contents", defaultValue="a\t3\r\nb\t5")String contents){
+
+    @RequestMapping(value = "/unit3", method = [GET, POST])
+    ResponseEntity<byte[]> index3(@RequestParam(value = "title", defaultValue = "test") String title,
+                                  @RequestParam(value = "contents", defaultValue = "a\t3\r\nb\t5") String contents) {
         System.out.println("ok /api/unit3 GET\n\n")
 
 
         OutputStream os = new ByteArrayOutputStream()
         HttpHeaders headers = new HttpHeaders()
-        Excelhelper2.s1(title,contents,os)
+        Excelhelper2.s1(title, contents, os)
 //        headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${title}.pdf\"")
-        headers.setContentType(new MediaType("application","pdf"))
+        headers.setContentType(new MediaType("application", "pdf"))
         return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
-
 
 
 }
