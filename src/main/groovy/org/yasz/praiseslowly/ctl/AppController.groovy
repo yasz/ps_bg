@@ -103,8 +103,9 @@ class AppController {
         OutputStream os = new ByteArrayOutputStream()
         HttpHeaders headers = new HttpHeaders()
         Excelhelper2.s1(title, contents, os)
-//        headers.set(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"${title}.pdf\"")
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${title}.pdf\"")
         headers.setContentType(new MediaType("application", "pdf"))
+
         return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
 
