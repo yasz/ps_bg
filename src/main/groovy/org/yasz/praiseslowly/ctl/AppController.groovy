@@ -42,14 +42,6 @@ class AppController {
     @RequestMapping(value = "/unit1", method = [GET, POST])
     ResponseEntity<byte[]> index(@RequestParam(value = "vano", defaultValue = "100101") String vano, @RequestParam
             (value = "sem", defaultValue = "211") String sem) {
-//        def a =jdbcTemplate.queryForList('select version()')
-
-//        println(a)
-//        println("!!!!!!${this.para}")
-//        println("!!!!!!${this.para1}")
-//        println(2)
-
-
         OutputStream os = new ByteArrayOutputStream()
         def conn = DataSourceUtils.getConnection(jdbcTemplate.getDataSource())
         new ReportViewService().getByVano([vano], sem, os, conn)
