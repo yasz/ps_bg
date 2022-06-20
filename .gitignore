@@ -5,3 +5,6 @@ build
 gradlew
 gradlew.bat
 gradle
+.docx
+.pdf
+.doc
