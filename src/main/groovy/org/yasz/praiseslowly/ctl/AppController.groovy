@@ -76,13 +76,13 @@ class AppController {
         if (filetype == 'pdf') {
             ppt.saveAsPDFOutputStream(os)
         } else {
-            ppt.saveAsPPTXOutputStream(os)
+            ppt.saveAsOutputStream(os)
         }
         HttpHeaders headers = new HttpHeaders()
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd")
         String filename = dateFormat.format(Calendar.getInstance().getTime())
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${filename}.${filetype}\"")
-        headers.setContentType(new MediaType("application", "octet-stream"))
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${filename}\"")
+//        headers.setContentType(new MediaType("application", "octet-stream")) // 提示浏览器直接下载
         return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
     }
 
