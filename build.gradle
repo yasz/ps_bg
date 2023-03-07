@@ -2,7 +2,10 @@ plugins {
 	id 'org.springframework.boot' version '2.4.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'org.springframework.boot.experimental.thin-launcher' version "1.0.25.RELEASE"
+	id 'java'
+	id 'groovy'
 }
+
 apply plugin: 'groovy'
 apply plugin: 'java-library'
 apply plugin: 'org.springframework.boot.experimental.thin-launcher'
@@ -26,15 +29,15 @@ jar {
 dependencies {
 
 	implementation "praise.site:helper"
-	implementation 'org.codehaus.groovy:groovy-all:3.0.7'
+
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation ('org.springframework.boot:spring-boot-starter-jdbc')
 	implementation('com.zaxxer:HikariCP:4.0.1')
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation "org.springframework.boot:spring-boot-devtools"    
-
+	implementation "org.springframework.boot:spring-boot-devtools"
     implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation ('org.springframework.boot:spring-boot-starter-test'){exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'}
+
 
 }
 compileJava.options.encoding = 'UTF-8'
