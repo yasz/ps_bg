@@ -1,22 +1,28 @@
-server:
-    port: 8090
-    tomcat:
-        max-threads: 10
-        max-http-post-size: 1000MB  #请求参数长度
-    max-http-header-size: 4048576
+common:
+  para: common1
 spring:
-    resources:
-        static-locations: file:./src/main/resources/static/
-    servlet:
-        multipart:
-            enabled: true
-            maxFileSize: 1000MB  #单个文件的最大上限
-            maxRequestSize: 1000MB #单个请求的文件总大小上限
-#redis:
-#    port: 6379
-#    host: localhost
-#    pool:
-#        maxIdle: 8 # max idle connections in the pool
-#        minIdle: 0 # min idle connections in the pool
-#        maxActive: -1 # no limit to the number of active connections
-#        maxWait: 30000 # time limit to get a connection - only applies if maxActive is finite
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    poolName: myPool
+    hikari:
+      maximum-pool-size: 5
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.sqlite.hibernate.dialect.SQLiteDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+#    driverClassName: org.postgresql.Driver
+#    jdbcUrl: jdbc:postgresql://ruianva.cn:5432/postgres
+#    username: postgres
+#    password: ruianVA123
+
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+      additional-paths: src/main #重启目录
+      exclude: WEB-INF/**
+  profiles:
+    active: pro

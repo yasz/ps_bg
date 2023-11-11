@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.yasz.praiseslowly.service.N2Service
 import service.ReportViewService
 import tool.DocxHelper
 import tool.PPTXHelper
@@ -31,13 +32,33 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST
 @RequestMapping("/api/")
 class AppController {
 
-    public @Value('${para}')
-    String para;
-    public @Value('${common.para}')
-    String para1;
+
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private N2Service n2Service;
+
+    @RequestMapping(value = "/kata", method = [GET, POST])
+    ResponseEntity<byte[]> kata(@RequestParam(value = "type1", defaultValue = "1") String type1, @RequestParam
+            (value = "type2", defaultValue = "1") String type2) {
+        OutputStream os = new ByteArrayOutputStream()
+        n2Service.exportKata(type1,type2,os)
+        HttpHeaders headers = new HttpHeaders()
+        def fileName = new java.text.SimpleDateFormat("yyMMddhhmmss").format(new Date())
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${fileName}.pdf\"")
+        headers.setContentType(new MediaType("application", "octet-stream"))
+        return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/vocabulary", method = [GET, POST])
+    ResponseEntity<byte[]> vocabulary(@RequestParam(value = "units", defaultValue = "1") String[] units) {
+        OutputStream os = new ByteArrayOutputStream()
+        n2Service.exportVocabulary(units,os)
+        HttpHeaders headers = new HttpHeaders()
+        def fileName = new java.text.SimpleDateFormat("yyMMddhhmmss").format(new Date())
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${fileName}.pdf\"")
+        headers.setContentType(new MediaType("application", "octet-stream"))
+        return new ResponseEntity<byte[]>(os.toByteArray(), headers, HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/unit1", method = [GET, POST])
     ResponseEntity<byte[]> index(@RequestParam(value = "vano", defaultValue = "100101") String vano, @RequestParam

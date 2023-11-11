@@ -1,0 +1,4 @@
+spring:
+  datasource:
+    jdbc-url: jdbc:sqlite:C:/Users/root/Desktop/cd_bg/prisma/db.sqlite
+
